@@ -1,0 +1,77 @@
+#Install and start nginx service
+
+---
+- name: Install and start nginx service
+  hosts: all
+  become: yes
+
+  tasks:
+  - name: install nginx
+    yum:
+      name: nginx
+      state: present
+  - name: start nginx service
+    service:
+      name: nginx
+      state: started
+      enabled: yes
+
+#terraform ec2 with tags
+
+provider "aws" {
+    region = "us-east-1"
+}
+
+resource "aws_instance" "pathnexWebServer" {
+    ami           = "ami-abcd1234abcd1234"
+    instance_type = "r5.2xlarge"
+
+    tags = {
+        Name        = "PathnexWebServer"
+        Environment = "Dev"
+        Owner       = "PathnexStudent"
+    }
+}
+
+#kubernetes deployment with 2 replicas
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: pathnex
+
+spec:
+  replicas: 2
+  selector:
+    matchLebels:
+      app: pathnex
+  template:
+    metadata:
+      labels:
+        app: pathnex
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+
+#Docker images and containers
+
+Dockerfile
+FROM node:18-alpine
+WORKDIR /app
+COPY packages*.json ./
+RUN npm install
+COPY . .
+CMD ["npm", "start"]
+
+
+docker build -t nodeapp .  #dockerfile from current directory to build image
+docker run nodeapp         #from nodeapp image to run container
+
+docker images              # list all docker images on that machine
+docker ps                  # list all running containers
+docker ps -a               # list all running as well as exited containers
+docker inspect <container name> and docker logs <container name>
+                           # to troubleshoot container

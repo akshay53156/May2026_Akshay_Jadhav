@@ -1,0 +1,78 @@
+# Install apache and start service 
+
+---
+- name: Install apache and start service
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Install apache2
+      yum:
+        name: httpd
+        state: present
+
+    - name: Start apache service
+      service:
+        name: httpd
+        state: started
+        enabled: yes
+
+# Terraform Instance block (t3.medium)
+
+provider "aws" {
+    region = "us-east-1"
+}
+
+resource "aws_instance" "WebServer" {
+    ami           = "ami-abcd1234abcd1234"
+    instance_type = "t3.medium"
+
+    tags = {
+        Name      = "WebServer"
+    }
+}
+
+# K8S: Create Replicaset with 3 replicas
+
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  app: pathnex-replicaset
+spec:
+  replicas: 3
+  selector:
+    matchLebels:
+      app: pathnex
+  Template:
+    metadata:
+      labels:
+        app: pathnex
+    spec:
+      containers:
+        - name: app
+          image: nginx
+          ports:
+            - containerPort: 80
+
+# Bash script: User Info
+
+#!/bin/bash
+
+echo "Current User: $(whoami)"
+echo "Current User group: $(groups)"
+
+# Docker
+
+#Docker file for nginx WebServer
+FROM nginx:latest
+COPY index.html usr/share/nginx/html/index.html
+
+#HTML
+<h1>Hello Pathnex</h1>
+
+#bash
+#Real Path
+/usr/share/nginx/html
+
+docker build -t pathnex-nginx .
+docker run -d -p 80:80 pathnex-nginx
