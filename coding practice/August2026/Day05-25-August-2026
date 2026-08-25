@@ -1,0 +1,78 @@
+# Jenkinsfile — With Git Integration and Testing
+
+pipeline {
+    agent any
+    stages {
+        stage ('Checkout') {
+            steps {
+                git clone 'https://github.com/sample-jave-code.git'
+            }
+        }
+
+        stage ('Build') {
+            steps {
+                echo 'Building code from the repository...'
+            }
+        }
+
+        stage ('Test') {
+            steps {
+                echo 'Running tests...'
+            }
+        }
+
+        stage ('Deploy') {
+            steps {
+                echo 'Deploying application...'
+            }
+        }
+    }
+}
+
+# Ansible create user and assign permissions
+
+---
+- name: Create a new user and assign permissions
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Create a new user
+      user:
+        name: newuser
+        state: present
+        shell: /bin/bash
+    - name: Assign Permissions to the new user
+      file:
+        path: /home/pathnex
+        owner: pathnex
+        group: pathnex
+        mode: '0755'
+
+# Terraform - Create EC2 Instance with tags and volume
+
+resource "aws_instance" "PathnexWebServer" {
+    ami = "ami-abcd1234abcd1234"
+    instance_type = "t3.medium"
+
+    tags = {
+        Name = "PathnexWebServer"
+    }
+
+    ebs_block_device {
+        device_name = "/dev/sdh"
+        volume_size = 50
+    }
+}
+
+# Docker
+# Python application 
+print("Hello Pathnex")
+
+FROM python:3.11
+WORKDIR /opt/pathnex/python-app
+COPY app.py .
+CMD ["python", "app.py"]
+
+#Real Path
+/opt/pathnex/pyhon-app
