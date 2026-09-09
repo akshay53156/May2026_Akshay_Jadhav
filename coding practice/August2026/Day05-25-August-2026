@@ -75,4 +75,4 @@ COPY app.py .
 CMD ["python", "app.py"]
 
 #Real Path
-/opt/pathnex/pyhon-app
+/opt/pathnex/python-app
